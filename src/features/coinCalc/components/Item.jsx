@@ -36,7 +36,16 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(1)
   },
   displayCell: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'center',
+  },
+  imageCell: {
+    flexGrow: 1
+  },
+  valueCell: {
+    display: 'flex',
+    alignItems: 'end',
   }
 }));
 
@@ -57,8 +66,8 @@ const CoinRow = (props) => {
   return (
     <Paper className={clsx(classes.rowContainer, classes.coinRow)}>
       <div className={classes.displayCell}>{coinTypeImage.display}</div>
-      <div style={{ flexGrow: 1 }} ><img src={coinTypeImage.image} alt={coinType} width="32" height="32" /></div>
-      <div>{amount.toString()}</div>
+      <div className={classes.imageCell} ><img src={coinTypeImage.image} alt={coinType} width="32" height="32" /></div>
+      <div className={classes.valueCell}>{amount.toString()}</div>
     </Paper>
   );
 };
