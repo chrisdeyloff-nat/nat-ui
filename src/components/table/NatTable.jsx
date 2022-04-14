@@ -12,10 +12,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import AddIcon from '@material-ui/icons/Add';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
+import { v4 as uuidv4 } from 'uuid';
 
 const NatTableHead = (props) => {
   const { classes, order, orderBy, onRequestSort, columns } = props;
@@ -28,7 +28,7 @@ const NatTableHead = (props) => {
       <TableRow>
         {columns.map((column) => (
           <TableCell
-            key={column.id}
+            key={uuidv4()}
             align="left"
             padding="normal"
             sortDirection={orderBy === column.id ? order : false}
@@ -190,24 +190,23 @@ const NatTable = (props) => {
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={!!rows ? rows.length : 0}
               columns={columns}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
+              {!!rows && stableSort(rows, getComparator(order, orderBy))
                 // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
                       role="checkbox"
                       tabIndex={-1}
-                      key={row.name}
+                      key={uuidv4()}
                     >
                       {columns.map((column) => (
-                        <TableCell align="left">{(!!!column.renderer) ? row[column.id].toString() : column.renderer(row)}</TableCell>
+                        <TableCell key={uuidv4()} align="left">{(!!!column.renderer) ? row[column.id].toString() : column.renderer(row)}</TableCell>
                       ))}
                       <TableCell align="right">
                         <IconButton aria-label="filter list" onClick={() => editAction(row)}>
@@ -227,7 +226,7 @@ const NatTable = (props) => {
 
 NatTable.propTypes = {
   columns: PropTypes.array.isRequired,
-  rows: PropTypes.array.isRequired,
+  rows: PropTypes.array,
   addAction: PropTypes.func.isRequired,
   editAction: PropTypes.func.isRequired,
   orderDir: PropTypes.string.isRequired,

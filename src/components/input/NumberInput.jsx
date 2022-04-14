@@ -42,7 +42,7 @@ const NumberInput = (props) => {
   const { value, setValue, prefix, decimalScale, label } = props;
 
   const handleChange = (event) => {
-    setValue(event.target.value);
+    setTimeout(() => setValue(event.target.value), 0);
   };
 
   return (

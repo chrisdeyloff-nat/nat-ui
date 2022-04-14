@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import NumberInput from 'components/input/NumberInput';
 import clsx from 'clsx';
@@ -11,6 +11,8 @@ import DimeImage from 'images/dime.jpeg';
 import NickelImage from 'images/nickel.jpeg';
 import PennyImage from 'images/penny.jpeg';
 import Paper from '@material-ui/core/Paper';
+import useCoinCalc from '../hooks/useCoinCalc';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   maxWidth: {
@@ -78,8 +80,48 @@ CoinRow.propTypes = {
 };
 
 const Item = (props) => {
+  const { id } = useParams()
+
+  const [
+    getItem,
+    currentItem,
+    ,
+    setCurrent,
+    saveHandler,
+  ] = useCoinCalc();
+
+  if (!!id) {
+    if (!!!currentItem || currentItem.id !== parseInt(id)) {
+      getItem(id);
+    }
+  } else {
+    if (!!!currentItem) {
+      setCurrent({
+        value: 0,
+        silverDollarValue: 0,
+        halfDollarValue: 0,
+        quarterValue: 0,
+        dimeValue: 0,
+        nickelValue: 0,
+        pennyValue: 0,
+      });
+    }
+  }
+
   const classes = useStyles();
-  const [amount, setAmount] = useState('');
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    if (!!currentItem) {
+      setValue(currentItem.value);
+    }
+  }, [currentItem]);
+
+  const localSaveHandler = async (event) => {
+    const item = {...currentItem, value};
+    await setCurrent(item);
+    saveHandler(item);
+  };
 
   return (
     <>
@@ -87,23 +129,23 @@ const Item = (props) => {
         <div className={clsx(classes.rowContainer, classes.spaceBetween, classes.toolSpace)}>
           <div>
             <NumberInput
-              value={amount}
-              setValue={setAmount}
+              value={value.toString()}
+              setValue={setValue}
               prefix="$"
               label="Amount"
             />
           </div>
           <div>
-            <Button color="primary">Save</Button>
+            <Button color="primary" onClick={localSaveHandler}>Save</Button>
           </div>
         </div>
         <div className={classes.columnContainer}>
-          <CoinRow coinType="silver" amount={10} />
-          <CoinRow coinType="half" amount={10} />
-          <CoinRow coinType="quarter" amount={10} />
-          <CoinRow coinType="dime" amount={10} />
-          <CoinRow coinType="nickel" amount={10} />
-          <CoinRow coinType="penny" amount={10} />
+          <CoinRow coinType="silver" amount={currentItem?.silverDollarValue ?? 0} />
+          <CoinRow coinType="half" amount={currentItem?.halfDollarValue ?? 0} />
+          <CoinRow coinType="quarter" amount={currentItem?.quarterValue ?? 0} />
+          <CoinRow coinType="dime" amount={currentItem?.dimeValue ?? 0} />
+          <CoinRow coinType="nickel" amount={currentItem?.nickelValue ?? 0} />
+          <CoinRow coinType="penny" amount={currentItem?.pennyValue ?? 0} />
         </div>
       </div>
     </>
